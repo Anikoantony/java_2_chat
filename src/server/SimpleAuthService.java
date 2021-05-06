@@ -22,6 +22,7 @@ public class SimpleAuthService implements AuthService {
     public SimpleAuthService() {
         users = new ArrayList<>();
         users2 = new ArrayList<>();
+        // подготовка к добавлению БД
         users.add(new UserData("qwe", "qwe", "qwe"));
         users.add(new UserData("asd", "asd", "asd"));
         users.add(new UserData("zxc", "zxc", "zxc"));
