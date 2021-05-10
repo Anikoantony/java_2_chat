@@ -28,6 +28,7 @@ public class Server {
     private AuthService authService;
 
     public Server() {
+
         clients = new CopyOnWriteArrayList<>();
         authService = new SimpleAuthService();
         try {

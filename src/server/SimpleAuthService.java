@@ -1,5 +1,6 @@
 package server;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +20,24 @@ public class SimpleAuthService implements AuthService {
     private  List<UserData> users2;
     private List<UserData> users;
 
+    // 1. Добавить в сетевой чат авторизацию через базу данных SQLite.
+    // делаем подключение к БД:
+   // static Connection postgresConnection;
+    static {
+        try {
+            Class.forName("org.postgresql.Driver");
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public SimpleAuthService() {
         users = new ArrayList<>();
         users2 = new ArrayList<>();
         // подготовка к добавлению БД
+        // 1. Добавить в сетевой чат авторизацию через базу данных SQLite.
+        // 2.*Добавить в сетевой чат возможность смены ника.
         users.add(new UserData("qwe", "qwe", "qwe"));
         users.add(new UserData("asd", "asd", "asd"));
         users.add(new UserData("zxc", "zxc", "zxc"));
@@ -34,13 +49,35 @@ public class SimpleAuthService implements AuthService {
 
     @Override
     public String getNicknameByLoginAndPassword(String login, String password) {
-        for (UserData user : users) {
-            if(user.login.equals(login) && user.password.equals(password)){
-                return user.nickname;
-            }
+        // подготовка к добавлению БД
+        // 1. Добавить в сетевой чат авторизацию через базу данных SQLite.
+        // 2.*Добавить в сетевой чат возможность смены ника.
+
+        String nickname = null;
+        try {
+
+            // Connection класс подключения DriverManager.getConnection () - подкл к базе
+            Connection postgresConnection = DriverManager.getConnection("jdbc:postgresql:GB","postgres","123");
+
+            // Statemanet - для выполнения запроса
+            Statement statement= postgresConnection.createStatement();
+
+            // выполнить запрос:
+
+
+            ResultSet resultSet = statement.executeQuery("select DISTINCT nickname from authbd where login = '"+ login +"' and pass = '"+ password +"'");
+            while(resultSet.next())
+            {
+                if (!resultSet.getString("nickname").isEmpty())
+                    nickname=resultSet.getString("nickname");
+                System.out.println("Такой пользователь существует, его ник: " + nickname);}
         }
-        return null;
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return nickname;
     }
+
 
     @Override
     public boolean registration(String login, String password, String nickname) {
