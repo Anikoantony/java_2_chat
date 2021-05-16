@@ -21,11 +21,18 @@ import javafx.stage.WindowEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
+import java.sql.*;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
+
+
+
+
+
     @FXML
     private TextArea textArea;
     @FXML
@@ -165,6 +172,54 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    static {
+        try {
+            Class.forName("org.postgresql.Driver");
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void changeNick() {
+
+        OutputStream a;
+
+
+        // 2.*Добавить в сетевой чат возможность смены ника.
+
+        String nickname2 = "NewNick";
+        if (!textField.getText().isEmpty())
+            nickname2 = textField.getText();
+
+            try {
+            // Connection класс подключения DriverManager.getConnection () - подкл к базе
+            Connection postgresConnection = DriverManager.getConnection("jdbc:postgresql:GB","postgres","123");
+
+            // Statemanet - для выполнения запроса
+            Statement statement= postgresConnection.createStatement();
+
+           // int result= statement.executeUpdate("update authbd set nickname='"+nickname2+"' where login = 'a'");
+           //     System.out.println("result" + result);
+            // !!! не разобрался как проверить логин для сменчы ника
+                PreparedStatement ps = postgresConnection.prepareStatement("update authbd set nickname= ? where login = 'a'");
+                        ps.setString(1,nickname2);
+                ps.execute();
+
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        setTitle(nickname2);
+        textField.clear();
+
+
+
+
+
     }
 
     @FXML
